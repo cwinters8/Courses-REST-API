@@ -4,6 +4,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const routes = require('./routes');
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
@@ -24,14 +25,15 @@ db.once('open', () => {
   console.log('DB Connection Successful');
 });
 
-// TODO setup your api routes here
-
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!',
   });
 });
+
+// use the routes module
+app.use('/api', routes);
 
 // send 404 if no other route matched
 app.use((req, res) => {
