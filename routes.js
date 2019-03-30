@@ -51,7 +51,7 @@ router.post('/users', [
   // check for validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors.array());
+    console.error(errors.array());
     res.status(422);
     next(errors.array());
   }
