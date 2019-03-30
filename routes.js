@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('basic-auth');
+const bcryptjs = require('bcryptjs');
 const User = require('./models').User;
 const Course = require('./models').Course;
 
@@ -9,10 +10,19 @@ const authentication = (req, res, next) => {
   if (credentials) {
     User.findOne({emailAddress: credentials.name}).exec((err, user) => {
       try {
-        req.user = user.emailAddress;
-        next();
+        const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
+        console.log(authenticated);
+        if (authenticated) {
+          console.log(`Authentication successful for user ${user.emailAddress}`);
+          req.user = user.emailAddress;
+          next();
+        } else {
+          err.message = `Authentication failure for user ${user.emailAddress}`;
+          console.error(err.message);
+          next(err);
+        }
       } catch(err) {
-        err.message = 'Credentials not found';
+        err.message = 'Invalid credentials';
         console.error(err);
         next(err);
       }
