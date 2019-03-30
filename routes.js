@@ -5,24 +5,37 @@ const User = require('./models').User;
 const Course = require('./models').Course;
 
 const authentication = (req, res, next) => {
-  let message = null;
   const credentials = auth(req);
   if (credentials) {
     User.findOne({emailAddress: credentials.name}).exec((err, user) => {
-      console.log(`Inside if: ${user.emailAddress}`);
-      req.user = user.emailAddress;
+      try {
+        req.user = user.emailAddress;
+        next();
+      } catch(err) {
+        err.message = 'Credentials not found';
+        console.error(err);
+        next(err);
+      }
     });
   } else {
-    message = 'Auth header not found';
+    err.message = 'Auth header not found';
+    next(err);
   }
-  console.log(`Outside of if: ${req.user}`);
-  
-  next();
 }
 
 // Get info about the authenticated user
 router.get('/users', authentication, (req, res, next) => {
   res.json({user: req.user});
+});
+
+// error handler
+router.use((err, req, res, next) => {
+  res.status = err.status || 500;
+  res.json({
+    error: {
+      message: err.message
+    }
+  });
 });
 
 module.exports = router;
