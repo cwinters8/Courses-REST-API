@@ -44,10 +44,11 @@ router.get('/users', authentication, (req, res, next) => {
 
 // create a new user
 router.post('/users', [
+  check('firstName').isLength({min: 1}),
+  check('lastName').isLength({min: 1}),
   check('emailAddress').isEmail(),
   check('password').isLength({min: 5})
 ], (req, res, next) => {
-  console.log(req.body);
   // check for validation errors
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -55,6 +56,17 @@ router.post('/users', [
     res.status(422);
     next(errors.array());
   }
+  // add user to database
+  const password = bcryptjs.hashSync(req.body.password);
+  User.create({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    emailAddress: req.body.emailAddress,
+    password: password
+  }).then(data => {
+    res.status(201);
+    res.json(data);
+  });
 });
 
 // error handler
