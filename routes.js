@@ -15,7 +15,7 @@ const authentication = (req, res, next) => {
         const authenticated = bcryptjs.compareSync(credentials.pass, user.password);
         if (authenticated) {
           console.log(`Authentication successful for user ${user.emailAddress}`);
-          req.user = user.emailAddress;
+          req.user = user;
           next();
         } else {
           err.message = `Authentication failure for user ${user.emailAddress}`;
@@ -39,7 +39,7 @@ const authentication = (req, res, next) => {
 
 // Get info about the authenticated user
 router.get('/users', authentication, (req, res, next) => {
-  res.json({user: req.user});
+  res.json(req.user);
 });
 
 // create a new user
