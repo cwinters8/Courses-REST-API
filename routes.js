@@ -37,6 +37,18 @@ const authentication = (req, res, next) => {
   }
 }
 
+// helper function to validate inputs
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.error(errors.array());
+    res.status(422);
+    next(errors.array());
+  } else {
+    next();
+  }
+}
+
 // Get info about the authenticated user
 router.get('/users', authentication, (req, res) => {
   res.json(req.user);
@@ -48,14 +60,7 @@ router.post('/users', [
   check('lastName').isLength({min: 1}),
   check('emailAddress').isEmail(),
   check('password').isLength({min: 5})
-], (req, res, next) => {
-  // check for validation errors
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    console.error(errors.array());
-    res.status(422);
-    next(errors.array());
-  }
+], validate, (req, res) => {
   // add user to database
   const password = bcryptjs.hashSync(req.body.password);
   User.create({
@@ -73,6 +78,23 @@ router.post('/users', [
 router.get('/courses', (req, res) => {
   Course.find().populate('user').then(data => {
     res.json(data);
+  });
+});
+
+// create a new course
+router.post('/courses', authentication, [
+  check('title').isLength({min: 1}),
+  check('description').isLength({min: 2})
+], validate, (req, res, next) => {
+  Course.create({
+    user: req.user._id,
+    title: req.body.title,
+    description: req.body.description,
+    estimatedTime: req.body.estimatedTime,
+    materialsNeeded: req.body.materialsNeeded
+  }).then(data => {
+    res.location(`/api/courses/${data._id}`);
+    res.send();
   });
 });
 
