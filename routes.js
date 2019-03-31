@@ -20,19 +20,21 @@ const authentication = (req, res, next) => {
         } else {
           err.message = `Authentication failure for user ${user.emailAddress}`;
           console.error(err.message);
-          res.status(401);
+          err.status = 401;
           next(err);
         }
       } catch(err) {
         err.message = 'Invalid credentials';
         console.error(err);
-        res.status(401);
+        err.status = 401;
         next(err);
       }
     });
   } else {
+    const err = {};
     err.message = 'Auth header not found';
-    res.status(401);
+    console.error(`error: ${err.message}`);
+    err.status = 401;
     next(err);
   }
 }
@@ -42,7 +44,7 @@ const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.error(errors.array());
-    res.status(422);
+    res.status(400);
     next(errors.array());
   } else {
     next();
@@ -92,7 +94,7 @@ router.get('/courses/:id', (req, res) => {
 router.post('/courses', authentication, [
   check('title').isLength({min: 1}),
   check('description').isLength({min: 2})
-], validate, (req, res, next) => {
+], validate, (req, res) => {
   Course.create({
     user: req.user._id,
     title: req.body.title,
@@ -106,14 +108,29 @@ router.post('/courses', authentication, [
   });
 });
 
+// update a course
+router.put('/courses/:id', authentication, [
+  check('title').isLength({min: 1}),
+  check('description').isLength({min: 2})
+], validate, (req, res) => {
+  // TODO: find out how to update a record
+});
+
+// delete a course
+router.delete('/courses/:id', authentication, (req, res) => {
+  // TODO: find out how to delete a record
+});
+
 // error handler
 router.use((err, req, res, next) => {
-  res.status = err.status || 500;
+  res.status(err.status || 500);
   let errorObject;
   if (err.message) {
     errorObject = {message: err.message};
-  } else {
+  } else if (err) {
     errorObject = err;
+  } else {
+    errorObject = {message: 'Something went wrong'}
   }
   res.json({
     error: errorObject
