@@ -81,6 +81,13 @@ router.get('/courses', (req, res) => {
   });
 });
 
+// get an individual course
+router.get('/courses/:id', (req, res) => {
+  Course.findById(req.params.id).populate('user').then(data => {
+    res.json(data);
+  });
+});
+
 // create a new course
 router.post('/courses', authentication, [
   check('title').isLength({min: 1}),
@@ -94,14 +101,8 @@ router.post('/courses', authentication, [
     materialsNeeded: req.body.materialsNeeded
   }).then(data => {
     res.location(`/api/courses/${data._id}`);
+    res.status(201);
     res.send();
-  });
-});
-
-// get an individual course
-router.get('/courses/:id', (req, res) => {
-  Course.findById(req.params.id).populate('user').then(data => {
-    res.json(data);
   });
 });
 
