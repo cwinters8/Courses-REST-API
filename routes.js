@@ -76,6 +76,13 @@ router.get('/courses', (req, res) => {
   });
 });
 
+// get an individual course
+router.get('/courses/:id', (req, res) => {
+  Course.findById(req.params.id).populate('user').then(data => {
+    res.json(data);
+  });
+});
+
 // error handler
 router.use((err, req, res, next) => {
   res.status = err.status || 500;
