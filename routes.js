@@ -38,7 +38,7 @@ const authentication = (req, res, next) => {
 }
 
 // Get info about the authenticated user
-router.get('/users', authentication, (req, res, next) => {
+router.get('/users', authentication, (req, res) => {
   res.json(req.user);
 });
 
@@ -65,6 +65,13 @@ router.post('/users', [
     password: password
   }).then(data => {
     res.status(201);
+    res.json(data);
+  });
+});
+
+// get the full list of courses
+router.get('/courses', (req, res) => {
+  Course.find().populate('user').then(data => {
     res.json(data);
   });
 });
