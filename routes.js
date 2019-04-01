@@ -44,8 +44,9 @@ const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.error(errors.array());
-    res.status(400);
-    next(errors.array());
+    errors.status = 400;
+    errors.message = errors.array();
+    next(errors);
   } else {
     next();
   }
@@ -112,13 +113,30 @@ router.post('/courses', authentication, [
 router.put('/courses/:id', authentication, [
   check('title').isLength({min: 1}),
   check('description').isLength({min: 2})
-], validate, (req, res) => {
-  // TODO: find out how to update a record
+], validate, (req, res, next) => {
+  Course.findByIdAndUpdate(req.params.id, {
+    title: req.body.title,
+    description: req.body.description,
+    estimatedTime: req.body.estimatedTime,
+    materialsNeeded: req.body.materialsNeeded
+  }, (error, response) => {
+    if (error) {
+      next(error);
+    }
+    res.status(204);
+    res.send();
+  });
 });
 
 // delete a course
 router.delete('/courses/:id', authentication, (req, res) => {
-  // TODO: find out how to delete a record
+  Course.findByIdAndDelete(req.params.id, (error, response) => {
+    if (error) {
+      next(error);
+    }
+    res.status(204);
+    res.send();
+  });
 });
 
 // error handler
