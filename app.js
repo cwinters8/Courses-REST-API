@@ -19,7 +19,10 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // database
-mongoose.connect('mongodb://localhost:27017/fsjstd-restapi', {useNewUrlParser: true, useFindAndModify: false});
+mongoose.connect(
+  'mongodb://localhost:27017/fsjstd-restapi', 
+  {useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true}
+);
 const db = mongoose.connection;
 db.on('error', err => {
   console.err('Connection error:', err);

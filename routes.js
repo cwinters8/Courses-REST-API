@@ -63,7 +63,7 @@ router.post('/users', [
   check('lastName').isLength({min: 1}),
   check('emailAddress').isEmail(),
   check('password').isLength({min: 5})
-], validate, (req, res) => {
+], validate, (req, res, next) => {
   // add user to database
   const password = bcryptjs.hashSync(req.body.password);
   User.create({
@@ -74,6 +74,10 @@ router.post('/users', [
   }).then(data => {
     res.status(201);
     res.json(data);
+  }).catch(err => {
+    err.status = 400;
+    console.error(err);
+    next(err);
   });
 });
 
