@@ -39,6 +39,31 @@ const authentication = (req, res, next) => {
   }
 }
 
+// make sure the user attempting to modify or delete a course owns it
+const modifyCourseAuth = (req, res, next) => {
+  Course.findById(req.params.id, 'user').exec((err, response) => {
+    if (response) {
+      if (String(response.user) !== String(req.user._id)) {
+        const error = {
+          status: 403,
+          message: `User does not have permission to modify course ID ${response._id}`
+        };
+        console.error(error.message);
+        next(error);
+      } else {
+        next();
+      }
+    } else {
+      const error = {
+        status: 404,
+        message: `Course ID ${req.params.id} does not exist`
+      }
+      console.error(error.message);
+      next(error);
+    }
+  });
+}
+
 // helper function to validate inputs
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -114,7 +139,7 @@ router.post('/courses', authentication, [
 });
 
 // update a course
-router.put('/courses/:id', authentication, [
+router.put('/courses/:id', authentication, modifyCourseAuth, [
   check('title').isLength({min: 1}),
   check('description').isLength({min: 2})
 ], validate, (req, res, next) => {
@@ -133,7 +158,7 @@ router.put('/courses/:id', authentication, [
 });
 
 // delete a course
-router.delete('/courses/:id', authentication, (req, res) => {
+router.delete('/courses/:id', authentication, modifyCourseAuth, (req, res) => {
   Course.findByIdAndDelete(req.params.id, (error, response) => {
     if (error) {
       next(error);
