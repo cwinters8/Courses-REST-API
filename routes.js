@@ -97,8 +97,9 @@ router.post('/users', [
     emailAddress: req.body.emailAddress,
     password: password
   }).then(data => {
+    res.location('/');
     res.status(201);
-    res.json(data);
+    res.send();
   }).catch(err => {
     err.status = 400;
     console.error(err);
