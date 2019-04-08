@@ -108,14 +108,14 @@ router.post('/users', [
 
 // get the full list of courses
 router.get('/courses', (req, res) => {
-  Course.find().populate('user').then(data => {
+  Course.find().populate('user', 'firstName lastName').then(data => {
     res.json(data);
   });
 });
 
 // get an individual course
 router.get('/courses/:id', (req, res) => {
-  Course.findById(req.params.id).populate('user').then(data => {
+  Course.findById(req.params.id).populate('user', 'firstName lastName').then(data => {
     res.json(data);
   });
 });
