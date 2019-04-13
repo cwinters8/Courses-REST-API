@@ -1,16 +1,8 @@
 
-# Full Stack JavaScript Techdegree v2 - REST API Project
+# REST API Project
+A REST API for managing a database of courses.
 
-## Overview of the Provided Project Files
-
-We've supplied the following files for you to use: 
-
-* The `seed` folder contains a starting set of data for your database in the form of a JSON file (`data.json`) and a collection of files (`context.js`, `database.js`, and `index.js`) that can be used to create your app's database and populate it with data (we'll explain how to do that below).
-* We've included a `.gitignore` file to ensure that the `node_modules` folder doesn't get pushed to your GitHub repo.
-* The `app.js` file configures Express to serve a simple REST API. We've also configured the `morgan` npm package to log HTTP requests/responses to the console. You'll update this file with the routes for the API. You'll update this file with the routes for the API.
-* The `nodemon.js` file configures the nodemon Node.js module, which we are using to run your REST API.
-* The `package.json` file (and the associated `package-lock.json` file) contain the project's npm configuration, which includes the project's dependencies.
-* The `RESTAPI.postman_collection.json` file is a collection of Postman requests that you can use to test and explore your REST API.
+Ninth project in the [Team Treehouse](http://referrals.trhou.se/clarkwinters) Full Stack JavaScript Techdegree.
 
 ## Getting Started
 
@@ -43,3 +35,22 @@ npm start
 ```
 
 To test the Express server, browse to the URL [http://localhost:5000/](http://localhost:5000/).
+
+## API Routes
+| Type   | Route             | Description                              | Auth Required | Request body fields                                    |
+| ------ | ----------------- | ---------------------------------------- | ------------- | ------------------------------------------------------ |
+| POST   | /api/users        | Creates a new user                       | False         | firstName, lastName, emailAddress, password            |
+| GET    | /api/users        | Returns the currently authenticated user | True          | N/A                                                    |
+| GET    | /api/courses      | Returns a full list of courses           | False         | N/A                                                    |
+| GET    | /api/courses/{id} | Returns a specific course                | False         | N/A                                                    |
+| POST   | /api/courses      | Creates a new course                     | True          | title, description, [estimatedTime], [materialsNeeded] |
+| PUT    | /api/courses/{id} | Updates a course                         | True          | title, description, [estimatedTime], [materialsNeeded] |
+| DELETE | /api/courses/{id} | Deletes a course                         | True          | N/A                                                    |
+
+## Technologies Used
+JavaScript  
+Node.js  
+Express  
+MongoDB  
+Mongoose  
+Encryption  
