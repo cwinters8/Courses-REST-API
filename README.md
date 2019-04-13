@@ -12,7 +12,6 @@ First, install the project's dependencies using `npm`.
 
 ```
 npm install
-
 ```
 
 Second, ensure that you have MongoDB installed globally on your system.
