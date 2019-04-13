@@ -144,12 +144,21 @@ router.put('/courses/:id', authentication, modifyCourseAuth, [
   check('title').isLength({min: 1}),
   check('description').isLength({min: 2})
 ], validate, (req, res, next) => {
-  Course.findByIdAndUpdate(req.params.id, {
+  const course = {
     title: req.body.title,
-    description: req.body.description,
-    estimatedTime: req.body.estimatedTime,
-    materialsNeeded: req.body.materialsNeeded
-  }, (error, response) => {
+    description: req.body.description
+  }
+  if (req.body.estimatedTime) {
+    course.estimatedTime = req.body.estimatedTime;
+  } else {
+    course.estimatedTime = undefined;
+  }
+  if (req.body.materialsNeeded) {
+    course.materialsNeeded = req.body.materialsNeeded;
+  }  else {
+    course.materialsNeeded = undefined;
+  }
+  Course.findByIdAndUpdate(req.params.id, course, (error, response) => {
     if (error) {
       next(error);
     }
